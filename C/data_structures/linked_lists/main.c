@@ -1,5 +1,6 @@
 // reference: https://github.com/mkirchner/linked-list-good-taste
 #include <stdio.h>
+#include <stdlib.h>
 
 struct list_item {
     int value;
@@ -21,18 +22,19 @@ void printlist(list_item *head){
     printf("\n");
 }
 
+list_item *create_list(int n){
+    list_item *results = malloc(sizeof(list_item));
+    results->value = n;
+    results->next = NULL;
+    return results;
+}
+
 int main(){
-    list_item n1, n2, n3;
     list lst;
-
-    n1.value = 45;
-    n2.value = 46;
-    n3.value = 47;
-
-    lst.head = &n3;
-    n3.next = &n2;
-    n2.next = &n1;
-    n1.next = NULL;
+    lst.head = create_list(5);
+    lst.head->next = create_list(6);
+    lst.head->next->next = create_list(7);
+    lst.head->next->next->next = NULL;
 
     printlist(lst.head);
 }
