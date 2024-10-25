@@ -29,6 +29,15 @@ list_item *create_list(int n){
     return results;
 }
 
+void free_list(list_item *head){
+    list_item *tmp;
+    while(head != NULL){
+        tmp = head;
+        head = head->next;
+        free(tmp);
+    }
+}
+
 int main(){
     list lst;
     lst.head = create_list(5);
@@ -37,4 +46,6 @@ int main(){
     lst.head->next->next->next = NULL;
 
     printlist(lst.head);
+    free_list(lst.head);
+
 }
