@@ -22,8 +22,13 @@ void printlist(list_item *head){
     printf("\n");
 }
 
+
 list_item *create_list(int n){
     list_item *results = malloc(sizeof(list_item));
+    if(results == NULL){
+        fprintf(stderr, "Memory allocation failed");
+        exit(1);
+    }
     results->value = n;
     results->next = NULL;
     return results;
@@ -39,7 +44,7 @@ void free_list(list_item *head){
 }
 
 int main(){
-    list lst;
+    list lst = {NULL};
     lst.head = create_list(5);
     lst.head->next = create_list(6);
     lst.head->next->next = create_list(7);
@@ -47,5 +52,9 @@ int main(){
 
     printlist(lst.head);
     free_list(lst.head);
+
+    lst.head = NULL;
+
+    return 0;
 
 }
