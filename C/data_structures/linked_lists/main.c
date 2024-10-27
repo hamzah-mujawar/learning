@@ -6,6 +6,7 @@ struct list_item {
     int value;
     struct list_item *next;
 };
+// define a type from struct and call it list_item
 typedef struct list_item list_item;
 
 struct list {
@@ -23,7 +24,9 @@ void printlist(list_item *head){
 }
 
 
-list_item *create_list(int n){
+list_item *create_node(int n){
+	// dynamically allocate memory with the size of 1 list list_item
+	// and then point to address of that memory
     list_item *results = malloc(sizeof(list_item));
     if(results == NULL){
         fprintf(stderr, "Memory allocation failed");
@@ -45,15 +48,13 @@ void free_list(list_item *head){
 
 int main(){
     list lst = {NULL};
-    lst.head = create_list(5);
-    lst.head->next = create_list(6);
-    lst.head->next->next = create_list(7);
+    lst.head = create_node(5);
+    lst.head->next = create_node(6);
+    lst.head->next->next = create_node(7);
     lst.head->next->next->next = NULL;
 
     printlist(lst.head);
     free_list(lst.head);
-
-    lst.head = NULL;
 
     return 0;
 
