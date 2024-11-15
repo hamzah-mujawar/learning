@@ -94,7 +94,7 @@ console.log(add5(2)) // logs 7
 ```
 1) the `makeAdding` function takes an argument, `firstNumber`, declares
 a constant `first` with the value of `firstNumber`, and returns another function.
-2) when an argument is passed to the resturned function, which we have assigned to 
+2) when an argument is passed to the returned function, which we have assigned to 
 add5, it returns the result of adding up the number passed earlier to the number passed now.
 
 Functions in JavaScript form closures. A closure refers to the combination of a 
@@ -116,18 +116,192 @@ categories: Global Scope and Local Scope.
 
 ## Lexical Environment?
 Lexical Environment, on the other hand, is a more concrete mechanism employed
-by JavaScript engins during runtime to manage and access the variables based
+by JavaScript's engine during runtime to manage and access the variables based
 on the Lexical Scope. It is part of the JavaScript execution context that consists
 of two significant parts:
 1) The Environment Record: This is where the specific variables, constants, and functions
 defined within the Lexical Scope are actually stored.
 2) A reference to the outer environment: This refers to the Lexical Environment
-of the parent scope. It allows for the chain through which Javascipt searches
+of the parent scope. It allows for the chain through which Javascript searches
 for variable values when a variable isn't found in the immediate Lexical Environment.
 
-Lexical environments are created every time a block of code or a function is excuted
+Lexical environments are created every time a block of code or a function is executed 
 containing all the local variables and being linked to an outer Lexical Environment.
 This effectively forms a Scope Chain that determines how variable lookups occur during 
 the execution of the code.
 
 ## Factory functions :factory:
+They work similar to how constructors do, but with one clear difference,
+they levy the power of closures, instead of using the `new` keyword to create
+an object. Factory functions set up and return the new object when you call the function.
+They do not use the prototype, which incurs a performance penalty. Though as
+a general rule this performance penalty isn't significant unless you're creating
+a thousand of objects.
+
+```js
+const User = function (name){
+    this.name = name;
+    this.discordName = "@" + name;
+}
+//this is a constructor -
+//then this can be turned into a factory
+
+
+function createUser(name){
+    const discordName = "@" + name;
+    return {name, discordName};
+}
+```
+
+### The object shorthand notation
+```js
+const name = "Bob";
+const age = 28;
+const color = "red";
+
+const thatObject = { name: name, age: age, color: color };
+
+//if we have variables with the same name as that of the property we are assigning to
+// then we can write it once.
+const nowFancyObject = { name, age, color };
+
+console.log( name, age, color ); //this outputs a mess Bob 28 red
+
+console.log({ name, age, color }); //this now logs as {name: "Bob", age: 28, color: "red"}
+
+```
+
+#### Destructuring:
+When you have an object, you can extract a property of an object into a 
+variable of the same name, or any named variable for an array.
+
+```js
+const obj = { a: 1, b:2 };
+const { a, b } = obj;
+// This creates two variables, a and b
+// which are equivalent to
+// const a = obj.a
+// const b = obj.b
+
+const array = [1, 2, 3, 4, 5];
+const [ zerothEle, firstEle ] = array;
+// this creates zerothEle and firstEle, both of which point
+// to the elemtns in the 0th and 1st indices of the array
+```
+### Destructuring examples:
+- Example 1:
+```js
+let a, b, rest;
+[ a, b ] = [10, 20];
+
+console.log(a);
+// should return 10
+
+console.log(b);
+// should return 20
+
+[ a, b, ...rest ] = [10, 20, 30, 40, 50];
+
+console.log(rest);
+```
+#### Binding and Assignment
+```js
+const obj = { a: 1, b: {c: 2 } };
+const {
+    a,
+    b: { c: d },
+} = obj;
+// Two variables are bound: 'a' and 'd'
+```
+![image](../images/binding_and_assignment_1.png)
+
+
+
+
+
+
+
+
+
+
+
+
+```js
+const obj = { a: 1, b: {c: 2 } };
+const { a } = obj; // a is constant
+
+let {
+    b: { c: d },
+} = obj; // d is reassignable
+```
+![image](../images/binding_and_assignment_2.png)
+
+- We don't need to use `var` or `let`:
+```js
+const numbers = [];
+const obj = { a: 1, b: 2 };
+
+({ a: numbers[0], b: numbers[1] } = obj);
+```
+however we need to make sure that we use parenthesis for this statement as we are
+not using `var` or `let`.
+
+#### Default values:
+
+Each destructuring property can have a *default* value. The default value 
+is used when the property isn't present, or has value `undefined`. It is not used
+if the property has a value `null`.
+```js
+const [ a = 1 ] = []; // a is 1
+const { b = 2 } = { b: undefined }; // b is 2
+const { c = 2 } = { c: null } // c is null
+
+```
+
+#### Examples:
+- Array destructuring:
+```js
+const foo = ["one", "two", "three"];
+
+const [red, yellow, green] = foo;
+console.log(red);//"one"
+console.log(yellow);// "two"
+console.log(green);// "three"
+```
+- Swapping variables:
+```js
+let a = 1;
+let b = 3;
+
+[a, b] = [b, a];
+console.log(a);// 3
+console.log(b); // 1
+
+const arr = [1, 2, 3];
+[arr[2], arr[1]] = [arr[1], arr[2]];
+console.log(arr); //[1, 3, 2]
+```
+
+- Parsing an array returned from a function
+```js
+function f(){
+    return [1, 2];
+}
+const [a, b] = f();
+console.log(a); // 1
+console.log(b); // 2
+```
+
+- Ignoring some returned values
+```js
+function f(){
+    return [1, 2, 3];
+}
+const [a, , b] = f();
+console.log(a); // 1
+console.log(b); // 3
+
+const [c] = f();
+console.log(c); //1
+```
+
