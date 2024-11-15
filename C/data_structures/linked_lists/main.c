@@ -69,7 +69,7 @@ list_item* create_node(int n)
  */
 void remove_cs101(list* l, list_item* target)
 {
-    list_item *curr = l->head, *prev = NULL;
+    list_item* curr = l->head, *prev = NULL;
     while (curr != target) {
         prev = curr;
         curr = curr->next;
@@ -115,13 +115,12 @@ int main()
     lst.head = create_node(5);
     lst.head->next = create_node(6);
     lst.head->next->next = create_node(7);
-    lst.head->next->next->next = NULL;
 
     printlist(lst.head);
-    
+
     printf("Removed list item: %d\n", lst.head->next->next->value);
 
-    // remove_cs101(&lst, lst.head->next->next);
+    //remove_cs101(&lst, lst.head->next->next);
 
     remove_elegant(&lst, lst.head->next->next);
     printlist(lst.head);
@@ -135,7 +134,6 @@ int main()
     list_item* test_3 = malloc(sizeof(list_item));
     test_3->value = 40;
     test_3->next = NULL;
-
     printf("Adding %d before %d\n", test_1->value, lst.head->next->value);
     insert_before(&lst, lst.head->next, test_1);
     printlist(lst.head);
