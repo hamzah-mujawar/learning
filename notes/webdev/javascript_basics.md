@@ -115,4 +115,19 @@ accessible or visible. Lexical Scopes can be broadly classified into two
 categories: Global Scope and Local Scope.
 
 ## Lexical Environment?
+Lexical Environment, on the other hand, is a more concrete mechanism employed
+by JavaScript engins during runtime to manage and access the variables based
+on the Lexical Scope. It is part of the JavaScript execution context that consists
+of two significant parts:
+1) The Environment Record: This is where the specific variables, constants, and functions
+defined within the Lexical Scope are actually stored.
+2) A reference to the outer environment: This refers to the Lexical Environment
+of the parent scope. It allows for the chain through which Javascipt searches
+for variable values when a variable isn't found in the immediate Lexical Environment.
 
+Lexical environments are created every time a block of code or a function is excuted
+containing all the local variables and being linked to an outer Lexical Environment.
+This effectively forms a Scope Chain that determines how variable lookups occur during 
+the execution of the code.
+
+## Factory functions :factory:
