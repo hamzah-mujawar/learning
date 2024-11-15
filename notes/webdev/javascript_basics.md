@@ -105,4 +105,14 @@ This surrounding state, also called its lexical environment, consists of
 any local variables that were in scope at the time of the closure was made.
 
 Here, `add5` is a reference to the `resulting` function, created when the
+`makeAdding` function is executed, thus it has access to lexical environment
+of the `resulting` function, which contains the `first` variable, making it
+available for use.
+
+## Lexical scope?
+Lexical scope refers to the context in which variables and functions are
+accessible or visible. Lexical Scopes can be broadly classified into two
+categories: Global Scope and Local Scope.
+
+## Lexical Environment?
 
