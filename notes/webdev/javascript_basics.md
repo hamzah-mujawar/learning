@@ -215,17 +215,6 @@ const {
 ```
 ![image](../images/binding_and_assignment_1.png)
 
-
-
-
-
-
-
-
-
-
-
-
 ```js
 const obj = { a: 1, b: {c: 2 } };
 const { a } = obj; // a is constant
@@ -303,5 +292,64 @@ console.log(b); // 3
 
 const [c] = f();
 console.log(c); //1
+```
+
+## Private variables and functions:
+```js
+function createUser(name){
+    const discordName = "@" + name;
+
+    let reputation = 0;
+
+    const getReputation = () => reputation;
+    const setReputation = () => reputation++;
+
+    return { name, discordName, getReputation, setReputation };
+}
+
+const john = createUser("john");
+
+john.setReputation();
+john.setReputation();
+
+console.log({
+    discordName: john.discordName,
+    reputation: john.getReputation(),
+});
+```
+
+## Prototypal inheritance with factories
+```js
+function createPlayer (name, level){
+    const { getReputation, giveReputation } = createUser(name);
+
+    const increaseLevel = () => level++;
+    return { name, getReputation, giveReputation, increaseLevel };
+}
+```
+- In case we want to extend User and want to inherit all its properties we can use this instead
+```js
+function createPlayer(name, level){
+    const user = createUser(name);
+
+    const increaseLevel = () => level++;
+    return Object.assign({}, user, {increaseLevel});
+}
+```
+- In this example we can see that we inherit all properties so, we get the `discordName` property as well.
+
+## The module pattern: IIFEs
+```js
+const calculator = (function(){
+    const add = (a, b) => a + b;
+    const sub = (a, b) => a - b;
+    const mul = (a, b) => a * b;
+    const div = (a, b) => a / b;
+    return { add, sub, mul, div };
+})();
+
+calculator.add(3,5);
+calculator.sub(6,2);
+calculator.mul(14, 5534);
 ```
 
