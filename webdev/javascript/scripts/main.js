@@ -1,12 +1,11 @@
-function f(){
-    return [1, 2, 3];
-}
-const [a, , b] = f();
-console.log(a); // 1
-console.log(b); // 3
+const calculator = (function(){
+    const add = (a, b) => a + b;
+    const sub = (a, b) => a - b;
+    const mul = (a, b) => a * b;
+    const div = (a, b) => a / b;
+    return { add, sub, mul, div };
+})();
 
-const [c] = f();
-console.log(c); //1
-
-[, ,] = f();
-
+calculator.add(3,5);
+calculator.sub(6,2);
+calculator.mul(14, 5534);
