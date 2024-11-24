@@ -425,3 +425,48 @@ calculator.add(3,5);
 calculator.sub(6,2);
 calculator.mul(14, 5534);
 #+end_src
+* Shallow Copy vs Deep Copy
+:PROPERTIES:
+:CUSTOM_ID: shallow_copy_vs_deep_copy
+:END:
+#+begin_src js
+array = [
+    [0 , 0 , 0],
+    [0 , 0 , 0],
+    [0 , 0 , 0],
+];
+
+let shallow = array.map(row => row);
+
+shallow[0][0] = 5;
+
+console.log(shallow);
+console.log(array);
+#+end_src
+- When you modify the shallow array changes will also be made to the original array, see output below:
+#+begin_src
+  [ [ 5, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ]
+  [ [ 5, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ]
+#+end_src
+
+- However, when you do a deep copy this doesn't happen:
+#+begin_src js
+array = [
+    [0 , 0 , 0],
+    [0 , 0 , 0],
+    [0 , 0 , 0],
+];
+
+let deep = array.map((rowArr, r) => [...rowArr]);
+
+deep[0][0] = 5;
+
+console.log(deep);
+console.log(array);
+#+end_src
+
+- The resulting output is:
+#+BEGIN_SRC
+[ [ 5, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ]
+[ [ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ] ]
+#+END_SRC
