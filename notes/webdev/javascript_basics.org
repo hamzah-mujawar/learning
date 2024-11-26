@@ -507,7 +507,7 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
-#+BEGIN_EXPORT org
+#+BEGIN_EXPORT markdown
 : John Smith
 : undefined
 #+END_EXPORT
@@ -522,7 +522,7 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
-#+BEGIN_EXPORT org
+#+BEGIN_EXPORT markdown
 : undefined
 #+END_EXPORT
 
@@ -545,7 +545,7 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
-#+BEGIN_EXPORT org
+#+BEGIN_EXPORT markdown
 : Alice
 : Cooper
 : undefined
@@ -570,7 +570,7 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
-#+BEGIN_EXPORT org
+#+BEGIN_EXPORT markdown
 : John Smith
 : name
 : surname
@@ -601,7 +601,7 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
-#+BEGIN_EXPORT org
+#+BEGIN_EXPORT markdown
 : Pete
 : Name is too short, need at least 4 chars
 : undefined
@@ -619,7 +619,7 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
-#+BEGIN_EXPORT org
+#+BEGIN_EXPORT markdown
 : 25
 : undefined
 #+END_EXPORT
@@ -637,7 +637,7 @@ let obj = {
   #+END_SRC
 
   #+RESULTS:
-  #+BEGIN_EXPORT org
+  #+BEGIN_EXPORT markdown
   : User { name: 'John', birthday: 1992-06-30T23:00:00.000Z }
   : undefined
   #+END_EXPORT
@@ -664,7 +664,7 @@ let obj = {
   #+END_SRC
 
   #+RESULTS:
-  #+BEGIN_EXPORT org
+  #+BEGIN_EXPORT markdown
   : 1992-06-30T23:00:00.000Z
   : 32
   : undefined
@@ -687,7 +687,7 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
-#+BEGIN_EXPORT org
+#+BEGIN_EXPORT markdown
 : John
 : undefined
 #+END_EXPORT
