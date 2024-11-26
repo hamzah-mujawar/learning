@@ -1044,7 +1044,7 @@ If for example you want to return an =Array= object from your derived array clas
 : undefined
 
 ** Mix-ins
-Abstract subclasses or min-ins are templates for classes.
+Abstract subclasses or mix-ins are templates for classes.
 
 #+BEGIN_SRC js
    const calculatorMixin = (Base) =>
@@ -1061,4 +1061,282 @@ Abstract subclasses or min-ins are templates for classes.
   class Bar extends calculatorMixin(randomizerMixin(Foo)) {}
 #+END_SRC
 
+** Private properties
 
+#+BEGIN_SRC js
+  class ClassWithPrivate {
+      #privateField;
+      #privateFieldWithInitialiser = 42;
+
+      #privateMethod() {
+      }
+      static #privateStaticField;
+      static #privateStaticFieldWithInitialiser = 42;
+
+      static #privateStaticMethod() {
+      }
+  }
+#+END_SRC
+You can have the following private class properties:
+- Private fields
+- Private methods
+- Private static fields
+- Private static methods
+- Private getter
+- Private setter
+- Private static getters
+- Private static setters
+
+However, constructors cannot be private in javascript.
+
+It is a syntax error to refer to =#= names from outside of the class. It is
+also a syntax error to refer to private properties that are not declared in the
+class body, or to attempt to remove a declared property with =delete=.
+
+You can use =in= operator to check whether an externally defined object
+possesses a private property. This will return =true= if the private field or
+method exists, and =false= otherwise.
+
+#+BEGIN_SRC js
+  class C {
+      #x;
+      constructor(x) {
+  	this.#x = x;
+      }
+      static getX(obj) {
+  	if (#x in obj) return obj.#x;
+
+  	return "obj must be an instance of C";
+      }
+  }
+  console.log(C.getX(new C("foo")));
+  console.log(C.getX(new C(0.195)));
+  console.log(C.getX(new C(new Date())));
+  console.log(C.getX({}));
+#+END_SRC
+
+*** RESULTS:
+: foo
+: 0.195
+: 2024-11-26T18:39:55.219Z
+: obj must be an instance of C
+: undefined
+
+** Examples of Private Properties
+#+BEGIN_SRC js
+  class ClassWithPrivateField {
+      #privateField;
+
+      constructor() {
+  	this.#privateField = 42;
+      }
+  }
+  class Subclass extends ClassWithPrivateField {
+      #subPrivateField;
+
+      constructor() {
+  	super();
+  	this.#subPrivateField = 23;
+      }
+  }
+
+  console.log(new Subclass());
+#+END_SRC
+
+#+RESULTS:
+: Subclass {}
+: undefined
+
+*** Private static fields
+- are added to the class constructor at class evaluation time, and
+- are only available on the class itself
+#+BEGIN_SRC js
+  class ClassWithPrivateStaticField {
+      static #privateStaticField = 42;
+
+      static publicStaticMethod() {
+  	return ClassWithPrivateStaticField.#privateStaticField;
+      }
+  }
+  console.log(ClassWithPrivateStaticField.publicStaticMethod());
+#+END_SRC
+
+*** RESULTS:
+: 42
+: undefined
+
+** What is static?
+- Static properties cannot be directly accessed on instances of the class,
+  and need to accessed on the class itself.
+- Static methods are often utility functions, such as function to create or
+  clone objects, whereas static properties are useful for caches, fixed-configurations,
+  or any other data you don't need replicated across instances.
+#+BEGIN_SRC js
+  class ClassWithStaticMethod {
+      static staticProperty = 'someValue';
+      static staticMethod() {
+  	return 'static method has been called.';
+      }
+      static {
+  	console.log('Class static initialisation block called');
+      }
+  }
+  console.log(ClassWithStaticMethod.staticProperty);
+  console.log(ClassWithStaticMethod.staticMethod());
+#+END_SRC
+
+*** RESULTS:
+: Class static initialisation block called
+: someValue
+: static method has been called.
+: undefined
+
+- The name of a static property cannot be =prototype=.
+- The name of a class field cannot be =constructor=.
+
+#+BEGIN_SRC js
+  class ClassWithStaticField {
+      static staticField;
+      static staticFieldWithInitialiser = "static field";
+  }
+  class SubclassWithStaticField extends ClassWithStaticField {
+      static subStaticField = "subclass field";
+  }
+  console.log(Object.hasOwn(ClassWithStaticField, "staticField"));
+  console.log(ClassWithStaticField.staticField);
+  console.log(ClassWithStaticField.staticFieldWithInitialiser);
+  console.log(SubclassWithStaticField.staticFieldWithInitialiser);
+  console.log(SubclassWithStaticField.subStaticField);
+#+END_SRC
+
+*** RESULTS:
+: true
+: undefined
+: static field
+: static field
+: subclass field
+: undefined
+
+#+BEGIN_SRC js
+  class ClassWithStaticField {
+      static baseStaticField = "base static field";
+      static anotherBaseStaticField = this.baseStaticField;
+
+      static baseStaticMethod() {
+  	return "base static method output";
+      }
+  }
+  class SubClassWithStaticField extends ClassWithStaticField {
+      static subStaticField = super.baseStaticMethod();
+  }
+  console.log(ClassWithStaticField.anotherBaseStaticField);
+  console.log(SubClassWithStaticField.subStaticField);
+#+END_SRC
+
+*** RESULTS:
+: base static field
+: base static method output
+: undefined
+
+** Examples
+Using static members in classes
+#+BEGIN_SRC js
+  class Triple {
+      static customName = "Tripler";
+      static description = "I triple any numbers you provide";
+      static calculate(n = 1) {
+  	return n * 3;
+      }
+  }
+
+  class SquaredTriple extends Triple {
+      static longDescription;
+      static description = "I square the triple of any number you provide";
+      static calculate(n) {
+  	return super.calculate(n) * super.calculate(n);
+      }
+  }
+  console.log(Triple.description);
+  console.log(Triple.calculate(6));
+
+  const tp = new Triple();
+
+  console.log(SquaredTriple.calculate(3));
+  console.log(SquaredTriple.description);
+  console.log(SquaredTriple.longDescription);
+  console.log(SquaredTriple.customName);
+
+  //console.log(tp.calculate()); gives an error not a function
+#+END_SRC
+
+*** RESULTS:
+: I triple any numbers you provide
+: 18
+: 81
+: I square the triple of any number you provide
+: undefined
+: Tripler
+: undefined
+
+- Calling static members from another static method
+U can use the =this= keyword.
+
+#+BEGIN_SRC js
+  class StaticMethodCall {
+      static staticProperty = "static property";
+      static staticMethod() {
+  	return `Static method and ${this.staticProperty} has been called`;
+      }
+      static anotherStaticMethod() {
+  	return `${this.staticMethod()} from another static method`;
+      }
+  }
+  console.log(StaticMethodCall.staticMethod());
+  console.log(StaticMethodCall.anotherStaticMethod());
+#+END_SRC
+
+#+RESULTS:
+: Static method and static property has been called
+: Static method and static property has been called from another static method
+: undefined
+
+- Calling static memebers from a class constructor and other methods
+Static members are not directly accessible using the =this= keyword from non-static methods.
+You need to call them using the class name: =classname.static_method_name()= / =classname.static_property_name=
+or by calling the method as a property of the =constructor=:
+=this.constructor.static_method_name()= / =this.constructor.static_property_name=
+
+#+BEGIN_SRC js
+  class StaticMethodCall {
+      constructor() {
+  	console.log(StaticMethodCall.staticProperty);
+  	console.log(this.constructor.staticProperty);
+  	console.log(StaticMethodCall.staticMethod());
+  	console.log(this.constructor.staticMethod());
+      }
+      static staticProperty = "static property";
+      static staticMethod() {
+  	return "static method has been called.";
+      }
+  }
+  console.log(new StaticMethodCall());
+#+END_SRC
+
+*** RESULTS:
+: static property
+: static property
+: static method has been called.
+: static method has been called.
+: StaticMethodCall {}
+: undefined
+
+* Composition vs Inheritance
+Inheritence: Designing your types based on what they are.
+Composition: Designing your types on what they do.
+
+You can use =Object.assign= to add properties from other objects.
+
+You should favour composition over inheritence, some say that inheritence is
+a terrible pattern.
+
+Inheritence encorages you to predict the future. Which may lead to design mistakes.
