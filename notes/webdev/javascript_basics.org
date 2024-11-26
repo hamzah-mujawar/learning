@@ -506,7 +506,7 @@ let obj = {
   console.log(user.fullName);
 #+END_SRC
 
-** RESULTS:
+*** RESULTS:
 : John Smith
 : undefined
 
@@ -520,7 +520,7 @@ let obj = {
   user.fullName = "Test"; //Error (property has only a getter)
 #+END_SRC
 
-** RESULTS:
+*** RESULTS:
 : undefined
 
 
@@ -542,7 +542,7 @@ let obj = {
   console.log(user.surname);
 #+END_SRC
 
-** RESULTS:
+*** RESULTS:
 : Alice
 : Cooper
 : undefined
@@ -566,15 +566,15 @@ let obj = {
   for(let key in user) console.log(key); //name, surname
 #+END_SRC
 
-** RESULTS:
+*** RESULTS:
 : John Smith
 : name
 : surname
 : undefined
 
 
-- for accessor properties, there is no #value or #writable, but instead
-  there ar #get and #set functions
+- for accessor properties, there is no =value= or =writable=, but instead
+  there ar =get= and =set= functions
 
 * Smarter getters/setters
 #+BEGIN_SRC js
@@ -596,7 +596,7 @@ let obj = {
   user.name = ""; //name too short
 #+END_SRC
 
-** RESULTS:
+*** RESULTS:
 : Pete
 : Name is too short, need at least 4 chars
 : undefined
@@ -613,13 +613,13 @@ let obj = {
   console.log( john.age );
 #+END_SRC
 
-** RESULTS:
+*** RESULTS:
 : 25
 : undefined
 
 
 - However, sooner or later things may change, instead of age we might want
-  store #birthday, because it's more precise and convenient.
+  store =birthday=, because it's more precise and convenient.
 
   #+BEGIN_SRC js
     function User(name, birthday) {
@@ -630,7 +630,7 @@ let obj = {
     console.log( john );
   #+END_SRC
 
-** RESULTS:
+*** RESULTS:
   : User { name: 'John', birthday: 1992-06-30T23:00:00.000Z }
   : undefined
   
@@ -656,7 +656,7 @@ let obj = {
     console.log( john.age );
   #+END_SRC
 
-** RESULTS:
+*** RESULTS:
   : 1992-06-30T23:00:00.000Z
   : 32
   : undefined
@@ -678,7 +678,387 @@ let obj = {
   user.sayHi();
 #+END_SRC
 
-** RESULTS:
+*** RESULTS:
 : John
 : undefined
+
+** What is a class?
+#+BEGIN_SRC js
+    class User {
+        constructor(name) { this.name = name; }
+        sayHi() { console.log(this.name); }
+    }
+  //proof: User is a function
+  console.log(typeof User); //function
+#+END_SRC
+
+*** RESULTS:
+: function
+: undefined
+
+- What is basically does it:
+  1) Creates a function named =User=, that becomes the result of the class
+     declaration. The function code is taken from the =constructor= method.
+  2) Stores class methods, such as =sayHi=, in =User.prototype=.
+    
+#+CAPTION: What classes are in javascript under the hood
+[[../images/class.png]]
+
+#+BEGIN_SRC js
+  class User {
+      constructor(name) { this.name = name; }
+      sayHi() { console.log(this.name); }
+  }
+  //class is a function
+  console.log(typeof User);//function
+
+  console.log(User === User.prototype.constructor);
+
+  console.log(User.prototype.sayHi);
+
+  console.log(Object.getOwnPropertyNames(User.prototype));
+#+END_SRC
+
+*** RESULTS:
+: function
+: true
+: [Function: sayHi]
+: [ 'constructor', 'sayHi' ]
+: undefined
+
+** Class Expression
+#+BEGIN_SRC js
+  let User = class MyClass{
+      sayHi() {
+  	console.log(MyClass);
+      }
+  };
+  new User().sayHi(); //works, shows MyClass definition
+  console.log(MyClass); // does not work
+#+END_SRC
+
+*** RESULTS:
+: [class MyClass]
+
+- We can also make classes on demand like this:
+#+BEGIN_SRC js
+  function makeClass(phrase){
+      return class{
+  	sayHi(){
+  	    console.log(phrase);
+  	}
+      };
+  }
+  //Create a new class
+  let User = makeClass("Hello");
+  new User().sayHi();
+#+END_SRC
+
+*** RESULTS:
+: Hello
+: undefined
+
+** Getters/setters
+#+BEGIN_SRC js
+  class User {
+      constructor(name) {
+  	this.name = name;
+      }
+      get name() {
+  	return this._name;
+      }
+      set name(value) {
+  	if (value.length < 4) {
+  	    console.log("name is too short");
+  	    return;
+  	}
+  	this._name = value;
+      }
+  }
+  let user = new User("John");
+  console.log(user.name); // John
+
+  user = new User(" ");
+#+END_SRC
+
+*** RESULTS:
+: John
+: name is too short
+: undefined
+
+** Class fields:
+#+BEGIN_SRC js
+  class User {
+      name = "John";
+
+      sayHi() {
+  	console.log(`Hello, ${this.name}! `);
+      }
+  }
+  new User().sayHi(); 
+#+END_SRC
+
+*** RESULTS:
+: Hello, John! 
+: undefined
+
+- Note, class fields only apply to teh individual objects, not =User.prototype=
+
+#+BEGIN_SRC js
+  class User{
+      name = "John";
+  }
+  let user = new User();
+  console.log(user.name);
+  console.log(User.prototype.name);
+#+END_SRC
+
+#+RESULTS:
+: John
+: undefined
+: undefined
+
+** Making bound methods with class fields
+#+BEGIN_SRC js
+  class Button {
+      constructor(value){
+  	this.value = value;
+      }
+      click() {
+  	console.log(this.value);
+      }
+  }
+  let button = new Button("hello");
+  setTimeout(button.click, 1000); //undefined
+#+END_SRC
+
+*** RESULTS:
+: undefinedundefined
+
+- The problem is called losing =this=
+- This can be fixed by:
+  1) Pass a wrapper function such as =setTimeout(()=> button.click(), 1000).
+  2) Bind the method to the object e.g. in the constructor.
+
+We can use class fields instead as well:
+
+#+BEGIN_SRC js
+  class Button{
+      constructor(value){
+  	this.value = value;
+      }
+      click = () => {
+  	console.log(this.value);
+      }
+  }
+  let button = new Button("hello");
+
+  setTimeout(button.click, 1000); 
+#+END_SRC
+
+*** RESULTS:
+: undefinedhello
+
+** Extends:
+The =extends= keyword is used to create a class that is a child of another class.
+
+#+BEGIN_SRC js
+  class DateFormatter extends Date {
+      getFormattedDate() {
+  	const months = [
+  	    'Jan',
+  	    'Feb',
+  	    'Mar',
+  	    'Apr',
+  	    'May',
+  	    'Jun',
+  	    'Jul',
+  	    'Aug',
+  	    'Sep',
+  	    'Oct',
+  	    'Nov',
+  	    'Dec',
+  	];
+  	return `${this.getDate()}-${months[this.getMonth()]}-${this.getFullYear()}`;
+      }
+  }
+  console.log(new DateFormatter('August 19, 1975 23:15:30').getFormattedDate());
+#+END_SRC
+
+*** RESULTS:
+: 19-Aug-1975
+: undefined
+
+#+BEGIN_SRC js
+  function OldStyleClass(){
+      this.someProperty = 1;
+  }
+  OldStyleClass.prototype.someMethod = function () {};
+
+  class ChildClass extends OldstyleClass {}
+
+  class ModernClass {
+      someProperty = 1;
+      someMethod(){}
+  }
+
+  class AnotherChildClass extends ModernClass {}
+#+END_SRC
+
+#+BEGIN_SRC js
+  class ParentClass {}
+  class ChildClass extends ParentClass {}
+
+  console.log(Object.getPrototypeOf(ChildClass) === ParentClass);
+  console.log(Object.getPrototypeOf(ChildClass.prototype) === ParentClass.prototype);
+#+END_SRC
+
+*** RESULTS:
+: true
+: true
+: undefined
+
+#+BEGIN_SRC js
+  class SomeClass extends class {
+      constructor() {
+  	console.log("Base class");
+      }
+  } {
+      constructor() {
+  	super();
+  	console.log("Derived class");
+      }
+  }
+  console.log(new SomeClass());
+#+END_SRC
+
+*** RESULTS:
+: Base class
+: Derived class
+: SomeClass {}
+: undefined
+
+- The base class may return anything from its constructor, the derived
+  class must return an objet or =undefined=, or a typeerror will be thrown
+
+#+BEGIN_SRC js
+  class ParentClass {
+      constructor() {
+  	return 1;
+      }
+  }
+  console.log(new ParentClass()); // ParentClass {}
+
+  class ChildClass extends ParentClass {
+      constructor(){
+  	super();
+  	return 1;
+      }
+  }
+  console.log(new ChildClass()); // TypeError
+#+END_SRC
+
+*** RESULTS:
+: ParentClass {}
+
+#+BEGIN_SRC js
+  class ParentClass {
+      constructor() {
+  	return 1;
+      }
+  }
+  console.log(new ParentClass()); // ParentClass {}
+
+  class ChildClass extends ParentClass {
+      constructor(){
+  	super();
+  	return undefined;
+      }
+  }
+  console.log(new ChildClass()); // ChildClass {}
+#+END_SRC
+
+*** RESULTS:
+: ParentClass {}
+: ChildClass {}
+: undefined
+
+** Extending null
+- useful when you want to create objects that do not inherit from =Object.prototype=.
+#+BEGIN_SRC js
+  class NullClass extends null {
+      constructor() {
+  	return Object.create(new.target.prototype);
+      }
+  }
+  const proto = Object.getPrototypeOf;
+  console.log(proto(proto(new NullClass()))); //null
+#+END_SRC
+
+*** RESULTS:
+: null
+: undefined
+
+** Extending plain objects
+#+BEGIN_SRC js
+  const Animal = {
+      speak() {
+  	console.log(`${this.name} makes a noise.`);
+      },
+  };
+  class Dog {
+      constructor(name) {
+  	this.name = name;
+      }
+  }
+  Object.setPrototypeOf(Dog.prototype, Animal);
+
+  const d = new Dog("Mitzie");
+  d.speak();
+#+END_SRC
+
+*** RESULTS:
+: Mitzie makes a noise.
+: undefined
+
+** Species
+If for example you want to return an =Array= object from your derived array class
+=MyArray=. You can use the species pattern.
+
+#+BEGIN_SRC js
+  class MyArray extends Array {
+      static get [Symbol.species]() {
+  	return Array;
+      }
+  }
+  const a = new MyArray(1, 2, 3);
+  const mapped = a.map((x) => x * x);
+
+  console.log(mapped instanceof MyArray); //false
+  console.log(mapped instanceof Array); // true
+#+END_SRC
+
+*** RESULTS:
+: false
+: true
+: undefined
+
+** Mix-ins
+Abstract subclasses or min-ins are templates for classes.
+
+#+BEGIN_SRC js
+   const calculatorMixin = (Base) =>
+         class extends Base {
+   	  calc() {}
+         };
+   const randomizerMixin = (Base) =>
+         class extends Base {
+   	  randomize() {}
+         };
+
+  // A class that uses mixins can be written like:
+  class Foo {}
+  class Bar extends calculatorMixin(randomizerMixin(Foo)) {}
+#+END_SRC
+
 
