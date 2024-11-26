@@ -481,7 +481,7 @@ console.log(array);
 - In JS, objects don't need classes to exist, they come with a
   plug and socket mechanism called "prototype" that can be used to
   wire up different objects.
-** Getters and setters:
+* Getters and setters:
 #+BEGIN_SRC js
 let obj = {
     get propName(){
@@ -507,8 +507,10 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
+#+BEGIN_EXPORT org
 : John Smith
 : undefined
+#+END_EXPORT
 
 #+BEGIN_SRC js
   let user = {
@@ -520,7 +522,9 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
+#+BEGIN_EXPORT org
 : undefined
+#+END_EXPORT
 
 #+BEGIN_SRC js
   let user = {
@@ -541,11 +545,13 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
+#+BEGIN_EXPORT org
 : Alice
 : Cooper
 : undefined
+#+END_EXPORT
 
-*** Accessor Descriptors
+* Accessor Descriptors
 #+BEGIN_SRC js
   let user = {
       name: "John",
@@ -564,10 +570,12 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
+#+BEGIN_EXPORT org
 : John Smith
 : name
 : surname
 : undefined
+#+END_EXPORT
 
 - for accessor properties, there is no #value or #writable, but instead
   there ar #get and #set functions
@@ -593,9 +601,11 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
+#+BEGIN_EXPORT org
 : Pete
 : Name is too short, need at least 4 chars
 : undefined
+#+END_EXPORT
 
 ** Using for compatability
 #+BEGIN_SRC js
@@ -609,8 +619,10 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
+#+BEGIN_EXPORT org
 : 25
 : undefined
+#+END_EXPORT
 
 - However, sooner or later things may change, instead of age we might want
   store #birthday, because it's more precise and convenient.
@@ -625,34 +637,39 @@ let obj = {
   #+END_SRC
 
   #+RESULTS:
+  #+BEGIN_EXPORT org
   : User { name: 'John', birthday: 1992-06-30T23:00:00.000Z }
   : undefined
+  #+END_EXPORT
+  
 
-  - Now the question is what do we do with the old code that uses #age property?
-  - We can keep it by adding a getter for #age
- #+BEGIN_SRC js
-   function User(name, birthday) {
-       this.name = name;
-       this.birthday = birthday;
+- Now the question is what do we do with the old code that uses #age property?
+- We can keep it by adding a getter for #age
+  #+BEGIN_SRC js
+    function User(name, birthday) {
+        this.name = name;
+        this.birthday = birthday;
 
-       Object.defineProperty(this, "age", {
-   	get() {
-   	    let todayYear = new Date().getFullYear();
-   	    return todayYear - this.birthday.getFullYear();
-   	}
-       });
-   }
-   let john = new User("John", new Date(1992, 6, 1));
+        Object.defineProperty(this, "age", {
+    	get() {
+    	    let todayYear = new Date().getFullYear();
+    	    return todayYear - this.birthday.getFullYear();
+    	}
+        });
+    }
+    let john = new User("John", new Date(1992, 6, 1));
 
-   console.log( john.birthday );
-   console.log( john.age );
- #+END_SRC
+    console.log( john.birthday );
+    console.log( john.age );
+  #+END_SRC
 
- #+RESULTS:
- : 1992-06-30T23:00:00.000Z
- : 32
- : undefined
-
+  #+RESULTS:
+  #+BEGIN_EXPORT org
+  : 1992-06-30T23:00:00.000Z
+  : 32
+  : undefined
+  #+END_EXPORT
+  
 * Class Syntax
 #+BEGIN_SRC js
   class User{
@@ -670,5 +687,7 @@ let obj = {
 #+END_SRC
 
 #+RESULTS:
+#+BEGIN_EXPORT org
 : John
 : undefined
+#+END_EXPORT
