@@ -1339,4 +1339,121 @@ You can use =Object.assign= to add properties from other objects.
 You should favour composition over inheritence, some say that inheritence is
 a terrible pattern.
 
-Inheritence encorages you to predict the future. Which may lead to design mistakes.
+Inheritance encorages you to predict the future. Which may lead to design mistakes.
+
+* Webpack:
+We can initliase a basic package.json file by running:
+#+BEGIN_SRC shell
+  npm init -y
+#+END_SRC
+
+To install Webpack we can do:
+
+#+BEGIN_SRC shell
+  npm install -D webpack webpack-cli
+#+END_SRC
+
+The =-D= flag is a shortcut for the =--save-dev= flag which tells npm to recrd
+the two packages as development dependencies. As we only need Webpack during
+development.
+
+For the project structure we want a =src= directory which keeps all our website's source code
+When we run Webpack to bundle our code, it will output our bundled code into the =dist= directory.
+
+The idea is that when someone needs to fork or clone the project they will not need the =dist= directory.
+
+To deploy our website we would only need the =dist= code and nothing else.
+
+* Asynchronous Code
+** Callbacks
+A callback function is a function passed into another function as an argument,
+which his then invoked inside the outer function to complete some action or routine.
+
+#+BEGIN_SRC js
+  myDiv.addEventListener("click", function(){
+      // do something
+  })
+#+END_SRC
+
+** Promises
+*** Event Loop?
+Javascript runtime can only do one thing at a time. We can do more than one thing
+at at time cuz the browser is more than just the run time. The browser gives us
+WebAPIs which are effectively threads, which we can't access as threads but we can make calls to.
+
+Example:
+#+BEGIN_SRC js
+  console.log("Hi");
+
+  setTimeout(function cb() {
+      console.log("There");
+  }, 5000);
+
+  console.log("Bye");
+#+END_SRC
+
+**** RESULTS:
+: Hi
+: Bye
+: undefinedThere
+
+So once we run the code, when we can the =setTimeout= function, the browser handles the timer using
+a WebAPI. After, the WebAPI is done it, they push our callback onto the =task queue=.
+
+The =Event Loop= looks at the =stack= and the =task queue=. The =Event loop= pushes the first thing in the =task queue=
+and pushes it onto the =stack=. The =Event loop= waits for the stack to clear before pushing to the =stack=.
+
+=Render queue= and a =Callback queue=.
+
+Don't block the =event loop= don't put slow code on the stack.
+
+If you have many callback which will fill up the =callback queue= you can debounce
+it to regulate it.
+
+- Some of the webapis let us initiate async tasks in background.
+- The =microtask queue= has priority over the =task queue= microtasks include:
+  - the function body in =.then(() => { ... } );=
+  - the function body in =.catch(() => { ... } );=
+  - the function body in =.finally(() => { ... } );=
+  - the function body in await:
+    #+BEGIN_SRC js
+      async function asyncFunc(){
+          await ...
+      }
+    #+END_SRC
+  - mutation observers and microtasks.
+     
+- the constuctor syntax for promise object is:
+  #+BEGIN_SRC js
+    let promise = new Promise(function(resolve, reject) {
+        
+    });
+  #+END_SRC
+- it has two arguments =resolve= and =reject= which are callback provided by Javascript.
+- =resolve(value)= - if the job has finished successfully, with result =value=.
+- =reject(error)= - if an error has occured. =error= is the error object.
+*** then
+#+BEGIN_SRC js
+  let promise = new Promise(function(resolve, reject) {
+      setTimeout(() => resolve("done!"), 1000);
+  });
+  promise.then(
+      result => console.log(result),// shows "done"
+      error => console.log(error) //doesn't run
+  );
+
+#+END_SRC
+
+#+RESULTS:
+: undefineddone!
+*** catch
+#+BEGIN_SRC js
+  let promise = new Promise((resolve, reject) => {
+      setTimeout(() => reject(new Error("Error!")), 1000);
+  });
+  promise.catch(console.log);
+#+END_SRC
+*** finally
+- finally has no arguments
+- shouldn't return anything
+- its supposed to be used for cleanup procedures.
