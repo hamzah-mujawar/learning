@@ -1,3 +1,4 @@
+
 ** The prototype:
 :PROPERTIES:
 :CUSTOM_ID: the-prototype
@@ -1486,3 +1487,76 @@ or we can use a =try/catch= block:
   }
 #+END_SRC
 
+* Higher Order Functions
+- Good for composition as we can take one function and put it into another function, allows us to compose a lot of small functions into a bigger function
+- An example of a basic higher order function is #filter
+
+#+BEGIN_SRC js
+  let animals = [
+      { name: 'Fluffykins', species: 'rabbit' },
+      { name: 'Caro',       species: 'dog' },
+      { name: 'Hamilton',   species: 'dog' },
+      { name: 'Harold',     species: 'fish' },
+      { name: 'Ursula',     species: 'cat' },
+      { name: 'Jimmy',      species: 'fish' }
+  ]
+
+  // let dogs = animals.filter((animal) => { // the arrow function is a callback function
+  //     // we can decouple the callback function
+  //     return animal.species === 'dog'
+  // })
+
+  // decoupled the callback function
+  let isDog = (animal) => {
+      return animal.species === 'dogs'
+  }
+
+  let dogs = animals.filter(isDog)
+  let otherAnimals = animals.reject(isDog)
+#+END_SRC
+
+** Map
+- Like filter is goes through an array
+- But unlike filter it doesn't throw the objects away, and instead transforms them
+
+#+BEGIN_SRC js :results output
+  let animals = [
+      { name: 'Fluffykins', species: 'rabbit' },
+      { name: 'Caro',       species: 'dog' },
+      { name: 'Hamilton',   species: 'dog' },
+      { name: 'Harold',     species: 'fish' },
+      { name: 'Ursula',     species: 'cat' },
+      { name: 'Jimmy',      species: 'fish' }
+  ]
+
+  // we want to get an array of all the names of all the animals
+  let names = animals.map( (x) => {
+      return x.name
+  })
+  console.log(names)
+#+END_SRC
+
+#+RESULTS:
+: [ 'Fluffykins', 'Caro', 'Hamilton', 'Harold', 'Ursula', 'Jimmy' ]
+ 
+** Reduce function
+- map, filter, reject are list transformations, they turn the list into something else
+- reduce, can be used to make any list transformation, you can fallback on this if you can't find and in built one.
+
+#+BEGIN_SRC js :results output
+  let orders = [
+      { amount: 250 },
+      { amount: 400 },
+      { amount: 100 },
+      { amount: 325 }
+  ]
+  
+  let totalAmount = orders.reduce( (sum, order) => {
+      return sum + order.amount
+  }, 0) // you need to pass an initial value to reduce, so sum will start from 0 in this case
+
+  console.log(totalAmount)
+#+END_SRC
+
+#+RESULTS:
+: 1075

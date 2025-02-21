@@ -1,0 +1,13 @@
+* GET :verb:
+get http://localhost:3001/api/notes/
+* POST :verb:
+post http://localhost:3001/api/notes/
+Accept: application/json
+Content-Type: application/json; charset=utf-8
+
+#+begin_src javascript
+{
+    "content": "something",
+    "important": false
+}
+#+end_src

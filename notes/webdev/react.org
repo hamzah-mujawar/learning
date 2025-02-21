@@ -58,3 +58,15 @@ the style sheet (main.css), the Javascript code (main.js), and the raw data of t
 
 - The =content-type= is in JSON format.
   
+* About HTTP request types
+All HTTP request should be /idempotent/:
+#+BEGIN_VERSE
+If a request does no generate side effects, then the results should be the same
+regardless of how many times the request is sent. The methods that are
+idempotent are: /GET/, /PUT/, /HEAD/ and /DELETE/.
+
+POST is not idempotent.
+#+END_VERSE
+* Middleware
+Middleware are functions that can be used for handling *request* and *response*
+objects.
